@@ -1,25 +1,21 @@
 package com.frencheducation.plugins
 
+import com.frencheducation.authentication.JwtService
+import com.frencheducation.authentication.hash
+import com.frencheducation.repository.Repository
+import com.frencheducation.routes.UserRoutes
 import io.ktor.server.application.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Application.configureRouting() {
-    routing {
-        get("/") {
-            call.respondText("Hello World!")
-        }
 
-        route("/create"){
-            post {
-                val body = call.receive<String>()
-                call.respond(body)
-            }
-            delete {
-                val body = call.receive<String>()
-                call.respond(body)
-            }
-        }
+    val db = Repository()
+    val jwtService = JwtService()
+    val hashFunction = { s: String -> hash(s) }
+
+    routing {
+        UserRoutes(db, jwtService, hashFunction)
+
+
     }
 }

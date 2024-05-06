@@ -31,6 +31,16 @@ dependencies {
     implementation("io.ktor:ktor-server-auth-jwt-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")
     implementation("ch.qos.logback:logback-classic:$logback_version")
+    implementation("io.ktor:ktor-server-locations:$ktor_version")
+
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+
+
+    implementation("org.jetbrains.exposed:exposed-java-time:0.49.0")
+    implementation ("org.jetbrains.exposed:exposed-core:0.49.0")
+    implementation ("org.jetbrains.exposed:exposed-dao:0.49.0")
+    implementation ("org.jetbrains.exposed:exposed-jdbc:0.49.0")
+    implementation ("org.postgresql:postgresql:42.2.18")
+    implementation ("com.zaxxer:HikariCP:4.0.3")
 }

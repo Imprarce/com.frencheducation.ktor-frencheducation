@@ -7,16 +7,16 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 
-class Repository {
+class UserRepository {
 
     suspend fun addUser(user: User) {
         dbQuery {
-            UserTable.insert { ut ->
-                ut[UserTable.email] = user.email
-                ut[UserTable.hashPassword] = user.hashPassword
-                ut[UserTable.userName] = user.userName
-                ut[UserTable.imageUrl] = user.imageUrl
-                ut[UserTable.dateCreateAcc] = user.dateCreateAcc
+            UserTable.insert { userTable ->
+                userTable[UserTable.email] = user.email
+                userTable[UserTable.hashPassword] = user.hashPassword
+                userTable[UserTable.userName] = user.userName
+                userTable[UserTable.imageUrl] = user.imageUrl
+                userTable[UserTable.dateCreateAcc] = user.dateCreateAcc
             }
         }
     }
@@ -33,7 +33,7 @@ class Repository {
         }
 
         return User(
-            id = row[UserTable.idUser],
+            idUser = row[UserTable.idUser],
             email = row[UserTable.email],
             hashPassword = row[UserTable.hashPassword],
             userName = row[UserTable.userName],

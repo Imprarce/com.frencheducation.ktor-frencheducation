@@ -5,7 +5,7 @@ import com.frencheducation.data.model.user.LoginRequest
 import com.frencheducation.data.model.user.RegisterRequest
 import com.frencheducation.data.model.SimpleResponse
 import com.frencheducation.data.model.user.User
-import com.frencheducation.repository.Repository
+import com.frencheducation.repository.UserRepository
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -20,7 +20,7 @@ import java.time.LocalDateTime
 //const val LOGIN_REQUEST = "$USERS/login"
 
 fun Route.UserRoutes(
-    db: Repository,
+    db: UserRepository,
     jwtService: JwtService,
     hashFunction: (String) -> String
 ) {
@@ -41,7 +41,7 @@ fun Route.UserRoutes(
             }
 
             val user = User(
-                id = 0,
+                idUser = 0,
                 email = registerRequest.email,
                 hashPassword = hashFunction(registerRequest.password),
                 userName = registerRequest.email,

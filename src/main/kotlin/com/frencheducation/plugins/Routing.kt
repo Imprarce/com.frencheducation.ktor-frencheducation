@@ -16,7 +16,7 @@ fun Application.configureRouting() {
 
     routing {
 
-        get("/"){
+        get("/health"){
             call.respond("Hello world!")
         }
 

@@ -6,6 +6,8 @@ val logback_version: String by project
 plugins {
     kotlin("jvm") version "1.9.23"
     id("io.ktor.plugin") version "2.3.10"
+    id ("com.github.johnrengelman.shadow") version "8.1.1"
+    id ("java")
 }
 
 group = "com.frencheducation"
@@ -18,9 +20,15 @@ application {
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 repositories {
     mavenCentral()
 }
+
 
 dependencies {
     implementation("io.ktor:ktor-server-core-jvm")
@@ -45,3 +53,12 @@ dependencies {
     implementation ("com.zaxxer:HikariCP:4.0.3")
 }
 
+
+tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+    archiveBaseName.set("main")
+    manifest.attributes["Main-Class"] = "io.ktor.server.netty.EngineMain"
+
+    from(sourceSets.main.get().output)
+    configurations = listOf(project.configurations.getByName("runtimeClasspath"))
+    dependsOn(tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>())
+}

@@ -7,9 +7,6 @@ import com.frencheducation.repository.DatabaseFactory
 import io.ktor.server.application.*
 import io.ktor.server.locations.*
 
-fun main(args: Array<String>) {
-    io.ktor.server.netty.EngineMain.main(args)
-}
 
 fun Application.module() {
     install(Locations)

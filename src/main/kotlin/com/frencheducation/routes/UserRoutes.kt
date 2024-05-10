@@ -1,12 +1,10 @@
 package com.frencheducation.routes
 
 import com.frencheducation.authentication.JwtService
-import com.frencheducation.data.model.user.LoginRequest
-import com.frencheducation.data.model.user.RegisterRequest
 import com.frencheducation.data.model.SimpleResponse
-import com.frencheducation.data.model.user.FindRequest
-import com.frencheducation.data.model.user.User
+import com.frencheducation.data.model.user.*
 import com.frencheducation.repository.UserRepository
+import com.google.gson.GsonBuilder
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -25,6 +23,10 @@ fun Route.UserRoutes(
     jwtService: JwtService,
     hashFunction: (String) -> String
 ) {
+    val gson = GsonBuilder()
+        .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeAdapter())
+        .create()
+
     post("v1/users/register") {
         val registerRequest = try {
             call.receive<RegisterRequest>()

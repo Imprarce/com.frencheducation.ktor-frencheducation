@@ -93,7 +93,7 @@ fun Route.UserRoutes(
         try {
 
             val gson = GsonBuilder()
-                .registerTypeAdapter(LocalDateTime::class.java, LocalDateTypeAdapter())
+                .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeTypeAdapter())
                 .create()
 
             val checkUser = db.findUserByEmail(findRequest.email)

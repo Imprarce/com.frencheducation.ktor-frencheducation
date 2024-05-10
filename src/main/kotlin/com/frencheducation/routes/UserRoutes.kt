@@ -49,7 +49,7 @@ fun Route.UserRoutes(
                 hashPassword = hashFunction(registerRequest.password),
                 userName = registerRequest.email,
                 imageUrl = "",
-                dateCreateAcc = LocalDateTime.now().toString()
+                dateCreateAcc = LocalDateTime.now()
             )
 
             db.addUser(user)
@@ -95,6 +95,7 @@ fun Route.UserRoutes(
         }
 
         try {
+
             val checkUser = db.findUserByEmail(findRequest.email)
 
             if(checkUser == null){
@@ -110,7 +111,7 @@ fun Route.UserRoutes(
                 imageUrl = checkUser.imageUrl,
                 dateCreateAcc = checkUser.dateCreateAcc
             )
-            call.respond(HttpStatusCode.OK, user)
+            call.respond(HttpStatusCode.OK, gson.toJson(user))
         } catch (e: Exception) {
             call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Что-то пошло не так"))
         }

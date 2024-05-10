@@ -93,7 +93,7 @@ fun Route.UserRoutes(
         try {
 
             val gson = GsonBuilder()
-                .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeAdapter())
+                .registerTypeAdapter(LocalDateTime::class.java, LocalDateTypeAdapter())
                 .create()
 
             val checkUser = db.findUserByEmail(findRequest.email)
@@ -111,7 +111,9 @@ fun Route.UserRoutes(
                 imageUrl = checkUser.imageUrl,
                 dateCreateAcc = checkUser.dateCreateAcc
             )
-            call.respond(HttpStatusCode.OK, gson.toJson(user))
+
+            val jsonString = gson.toJson(user)
+            call.respond(HttpStatusCode.OK, jsonString)
         } catch (e: Exception) {
             call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Что-то пошло не так"))
         }

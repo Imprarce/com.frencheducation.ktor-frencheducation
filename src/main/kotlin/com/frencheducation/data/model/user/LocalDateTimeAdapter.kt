@@ -2,25 +2,20 @@ package com.frencheducation.data.model.user
 
 import com.google.gson.*
 import java.lang.reflect.Type
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class LocalDateTimeAdapter : JsonDeserializer<LocalDateTime>, JsonSerializer<LocalDateTime> {
-    private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
-
+class LocalDateTypeAdapter : JsonSerializer<LocalDate?>, JsonDeserializer<LocalDate?> {
+    private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    @Throws(JsonParseException::class)
     override fun deserialize(
-        json: JsonElement?,
-        typeOfT: Type?,
+        json: JsonElement, typeOfT: Type?,
         context: JsonDeserializationContext?
-    ): LocalDateTime {
-        return LocalDateTime.parse(json?.asString, formatter)
+    ): LocalDate {
+        return LocalDate.parse(json.asString, formatter)
     }
 
-    override fun serialize(
-        src: LocalDateTime?,
-        typeOfSrc: Type?,
-        context: JsonSerializationContext?
-    ): JsonElement {
-        return JsonPrimitive(formatter.format(src))
+    override fun serialize(src: LocalDate?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
+        return JsonPrimitive(src!!.format(formatter))
     }
 }

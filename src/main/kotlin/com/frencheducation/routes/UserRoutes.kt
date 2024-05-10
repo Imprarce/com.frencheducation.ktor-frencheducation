@@ -108,7 +108,7 @@ fun Route.UserRoutes(
                 imageUrl = checkUser.imageUrl,
                 dateCreateAcc = checkUser.dateCreateAcc
             )
-            call.respond(HttpStatusCode.OK, SimpleResponse(true, jwtService.generateToken(user)))
+            call.respond(HttpStatusCode.OK, user)
         } catch (e: Exception) {
             call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Что-то пошло не так"))
         }

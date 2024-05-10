@@ -18,14 +18,14 @@ import java.time.LocalDateTime
 //const val REGISTER_REQUEST = "$USERS/register"
 //const val LOGIN_REQUEST = "$USERS/login"
 
+val gson = GsonBuilder()
+    .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeAdapter())
+    .create()
 fun Route.UserRoutes(
     db: UserRepository,
     jwtService: JwtService,
     hashFunction: (String) -> String
 ) {
-    val gson = GsonBuilder()
-        .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeAdapter())
-        .create()
 
     post("v1/users/register") {
         val registerRequest = try {
@@ -49,7 +49,7 @@ fun Route.UserRoutes(
                 hashPassword = hashFunction(registerRequest.password),
                 userName = registerRequest.email,
                 imageUrl = "",
-                dateCreateAcc = LocalDateTime.now()
+                dateCreateAcc = LocalDateTime.now().toString()
             )
 
             db.addUser(user)

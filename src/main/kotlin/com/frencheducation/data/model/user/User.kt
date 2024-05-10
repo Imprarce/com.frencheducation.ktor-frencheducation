@@ -9,5 +9,5 @@ data class User(
     var hashPassword: String,
     var userName: String,
     var imageUrl: String,
-    var dateCreateAcc: LocalDateTime
+    var dateCreateAcc: String
 ) : Principal

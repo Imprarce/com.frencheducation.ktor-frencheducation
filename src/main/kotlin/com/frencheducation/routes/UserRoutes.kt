@@ -4,6 +4,7 @@ import com.frencheducation.authentication.JwtService
 import com.frencheducation.data.model.user.LoginRequest
 import com.frencheducation.data.model.user.RegisterRequest
 import com.frencheducation.data.model.SimpleResponse
+import com.frencheducation.data.model.user.FindRequest
 import com.frencheducation.data.model.user.User
 import com.frencheducation.repository.UserRepository
 import io.ktor.http.*
@@ -78,6 +79,36 @@ fun Route.UserRoutes(
                 }
 
             }
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Что-то пошло не так"))
+        }
+    }
+
+    get("v1/users/get") {
+        val findRequest = try {
+            call.receive<FindRequest>()
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Вы не ввели почту"))
+            return@get
+        }
+
+        try {
+            val checkUser = db.findUserByEmail(findRequest.email)
+
+            if(checkUser == null){
+                call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Пользователя не существует"))
+                return@get
+            }
+
+            val user = User(
+                idUser = checkUser.idUser,
+                email = checkUser.email,
+                hashPassword = checkUser.hashPassword,
+                userName = checkUser.userName,
+                imageUrl = checkUser.imageUrl,
+                dateCreateAcc = checkUser.dateCreateAcc
+            )
+            call.respond(HttpStatusCode.OK, SimpleResponse(true, jwtService.generateToken(user)))
         } catch (e: Exception) {
             call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Что-то пошло не так"))
         }

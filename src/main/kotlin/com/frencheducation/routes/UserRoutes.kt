@@ -17,10 +17,6 @@ import java.time.LocalDateTime
 //const val USERS = "$API_VERSION/users"
 //const val REGISTER_REQUEST = "$USERS/register"
 //const val LOGIN_REQUEST = "$USERS/login"
-
-val gson = GsonBuilder()
-    .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeAdapter())
-    .create()
 fun Route.UserRoutes(
     db: UserRepository,
     jwtService: JwtService,
@@ -95,6 +91,10 @@ fun Route.UserRoutes(
         }
 
         try {
+
+            val gson = GsonBuilder()
+                .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeAdapter())
+                .create()
 
             val checkUser = db.findUserByEmail(findRequest.email)
 

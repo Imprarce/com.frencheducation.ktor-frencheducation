@@ -32,6 +32,7 @@ object DatabaseFactory {
     private fun hikari(): HikariDataSource{
         val config = HikariConfig()
         config.driverClassName = System.getenv("JDBC_DRIVER")
+//        config.jdbcUrl = System.getenv("LOCAL_DATABASE_URL")
         config.jdbcUrl = System.getenv("DATABASE_URL")
         config.username = System.getenv("DB_USER")
         config.password = System.getenv("DB_PASSWORD")

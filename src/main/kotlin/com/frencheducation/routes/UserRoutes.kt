@@ -83,9 +83,9 @@ fun Route.UserRoutes(
     }
 
     get("v1/users/get") {
-        val findRequest = try {
-            call.receive<FindRequest>()
-        } catch (e: Exception) {
+        val email = call.request.queryParameters["email"]
+
+        if (email.isNullOrBlank()) {
             call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Вы не ввели почту"))
             return@get
         }
@@ -96,7 +96,7 @@ fun Route.UserRoutes(
                 .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeTypeAdapter())
                 .create()
 
-            val checkUser = db.findUserByEmail(findRequest.email)
+            val checkUser = db.findUserByEmail(email)
 
             if(checkUser == null){
                 call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Пользователя не существует"))

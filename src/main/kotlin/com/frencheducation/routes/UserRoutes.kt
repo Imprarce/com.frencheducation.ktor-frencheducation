@@ -97,7 +97,7 @@ fun Route.UserRoutes(
                         if (partData.name == "email") {
                         }
                     }
-//
+
                     is PartData.FileItem -> {
                         fileName = partData.originalFileName ?: "unknown"
                         val file = File("src/main/resources/images/$fileName")
@@ -130,7 +130,7 @@ fun Route.UserRoutes(
                     return@post
                 }
                 db.updateUserImage(user.idUser, imageUrl)
-                call.respond(HttpStatusCode.OK, SimpleResponse(true, "Аватар успешно обновлен"))
+                call.respond(HttpStatusCode.OK, SimpleResponse(true, "Аватар успешно обновлен - $imageUrl"))
             } catch (e: Exception) {
                 call.respond(
                     HttpStatusCode.Conflict, SimpleResponse(false, "Ошибка при обновлении аватара пользователя - ${e.message}")

@@ -185,7 +185,7 @@ fun Route.UserRoutes(
                 )
                 return@get
             }
-            call.respond(HttpStatusCode.OK, user.imageUrl)
+            call.respond(HttpStatusCode.OK, "https://"+user.imageUrl)
         } catch (e: Exception) {
             call.respond(HttpStatusCode.InternalServerError, SimpleResponse(false, "Ошибка при загрузке файла"))
         }

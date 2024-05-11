@@ -8,5 +8,5 @@ build:
     build/libs/*.jar: /
 run:
   jarName: com.frencheducation.ktor-frencheducation-all.jar
-  persistenceMount: /data
+  persistenceMount: src/main/resources/images
   containerPort: 8080

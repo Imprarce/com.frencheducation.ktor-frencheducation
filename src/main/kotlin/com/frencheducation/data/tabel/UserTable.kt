@@ -9,7 +9,7 @@ object UserTable : Table("user") {
     var email = varchar("email", 50)
     var hashPassword = varchar("password", 512)
     var userName = varchar("user_name", 50)
-    var imageUrl = varchar("image_url", 200)
+    var imageUrl = varchar("image_url", 400)
     var dateCreateAcc = datetime("date_create_acc")
 
     override val primaryKey: PrimaryKey = PrimaryKey(idUser)

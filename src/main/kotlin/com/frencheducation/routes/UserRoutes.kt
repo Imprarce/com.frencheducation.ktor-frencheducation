@@ -100,7 +100,7 @@ fun Route.UserRoutes(
                     }
                     is PartData.FileItem -> {
                         fileName = partData.originalFileName ?: "unknown"
-                        val file = File("C:\\Users\\Imprarce\\Desktop\\ktor-frencheducation\\src\\main\\resources\\images\\$fileName")
+                        val file = File("src/main/resources/images/$fileName")
                         partData.streamProvider().use { input ->
                             file.outputStream().buffered().use { output ->
                                 input.copyTo(output)
@@ -143,7 +143,7 @@ fun Route.UserRoutes(
             return@get
         }
         try {
-            val file = File("C:\\Users\\Imprarce\\Desktop\\ktor-frencheducation\\src\\main\\resources\\images\\$fileName")
+            val file = File("src/main/resources/images/$fileName")
             if (!file.exists()) {
                 call.respond(HttpStatusCode.NotFound, SimpleResponse(false, "Файл не найден"))
                 return@get

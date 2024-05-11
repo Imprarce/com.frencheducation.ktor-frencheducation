@@ -97,7 +97,7 @@ fun Route.UserRoutes(
                         if (partData.name == "email") {
                         }
                     }
-
+//
                     is PartData.FileItem -> {
                         fileName = partData.originalFileName ?: "unknown"
                         val file = File("C:\\Users\\Imprarce\\Desktop\\ktor-frencheducation\\src\\main\\resources\\images\\$fileName")

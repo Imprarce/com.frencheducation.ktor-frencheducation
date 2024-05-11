@@ -6,6 +6,7 @@ import com.frencheducation.repository.DatabaseFactory.dbQuery
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.update
 
 class UserRepository {
 
@@ -25,6 +26,14 @@ class UserRepository {
         UserTable.select { UserTable.email.eq(email) }
             .map { rowToUser(it) }
             .singleOrNull()
+    }
+
+    suspend fun updateUserImage(userId: Int, newImageUrl: String) {
+        dbQuery {
+            UserTable.update({ UserTable.idUser eq userId }) {
+                it[imageUrl] = newImageUrl
+            }
+        }
     }
 
     private fun rowToUser(row: ResultRow?): User?{

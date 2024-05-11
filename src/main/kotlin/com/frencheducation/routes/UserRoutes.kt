@@ -6,12 +6,15 @@ import com.frencheducation.data.model.user.*
 import com.frencheducation.repository.UserRepository
 import com.google.gson.GsonBuilder
 import io.ktor.http.*
+import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.routing.post
+import java.io.File
 import java.time.LocalDateTime
+import java.util.*
 
 //const val API_VERSION = "/v1"
 //const val USERS = "$API_VERSION/users"
@@ -82,6 +85,52 @@ fun Route.UserRoutes(
         }
     }
 
+
+
+    post("v1/users/image") {
+        val multipart = call.receiveMultipart()
+        var fileName: String? = null
+        var text: String?= null
+        try{
+            multipart.forEachPart { partData ->
+                when(partData){
+                    is PartData.FormItem -> {
+                        if (partData.name == "text"){
+                            text = partData.value
+                        }
+                    }
+                    is PartData.FileItem ->{
+                        fileName = partData.save(Constants.USER_IMAGES_PATH)
+                    }
+                    is PartData.BinaryItem -> Unit
+                    else -> {}
+                }
+            }
+            val imageUrl = "${Constants.BASE_URL}/uploaded_images/$fileName"
+
+
+            val email = call.request.queryParameters["email"]
+            if (email.isNullOrBlank()) {
+                call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Не указан email пользователя"))
+                return@post
+            }
+            try {
+                val user = db.findUserByEmail(email)
+                if (user == null) {
+                    call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Пользователь с указанным email не найден"))
+                    return@post
+                }
+                db.updateUserImage(user.idUser, imageUrl)
+                call.respond(HttpStatusCode.OK, SimpleResponse(true, "Аватар успешно обновлен"))
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Ошибка при обновлении аватара пользователя"))
+            }
+        } catch (ex: Exception) {
+            File("${Constants.USER_IMAGES_PATH}/$fileName").delete()
+            call.respond(HttpStatusCode.InternalServerError,"Ошибка при загрузке изображения")
+        }
+    }
+
     get("v1/users/get") {
         val email = call.request.queryParameters["email"]
 
@@ -118,4 +167,15 @@ fun Route.UserRoutes(
             call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Что-то пошло не так"))
         }
     }
+}
+
+fun PartData.FileItem.save(path: String): String {
+    val fileBytes = streamProvider().readBytes()
+    val fileExtension = originalFileName?.takeLastWhile { it != '.' }
+    val fileName = UUID.randomUUID().toString() + "." + fileExtension
+    val folder = File(path)
+    folder.mkdir()
+    println("Path = $path $fileName")
+    File("$path$fileName").writeBytes(fileBytes)
+    return fileName
 }

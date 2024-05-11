@@ -100,7 +100,7 @@ fun Route.UserRoutes(
 //
                     is PartData.FileItem -> {
                         fileName = partData.originalFileName ?: "unknown"
-                        val file = File("src/main/resources/images/$fileName")
+                        val file = File("/images/$fileName")
                         partData.streamProvider().use { input ->
                             file.outputStream().buffered().use { output ->
                                 input.copyTo(output)
@@ -145,7 +145,7 @@ fun Route.UserRoutes(
     get("/{name}") {
         // get filename from request url
         val filename = call.parameters["name"]!!
-        val file = File("src/main/resources/images/$filename")
+        val file = File("/images/$filename")
         if(file.exists()) {
             call.respondFile(file)
         }

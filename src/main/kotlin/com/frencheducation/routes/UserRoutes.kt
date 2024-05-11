@@ -87,26 +87,31 @@ fun Route.UserRoutes(
 
 
 
-    post("v1/users/image") {
+    post("v1/users/images") {
         val multipart = call.receiveMultipart()
         var fileName: String? = null
-        var text: String?= null
-        try{
+
+        try {
             multipart.forEachPart { partData ->
-                when(partData){
+                when (partData) {
                     is PartData.FormItem -> {
-                        if (partData.name == "text"){
-                            text = partData.value
+                        if (partData.name == "email") {
                         }
                     }
-                    is PartData.FileItem ->{
-                        fileName = partData.save(Constants.USER_IMAGES_PATH)
+                    is PartData.FileItem -> {
+                        fileName = partData.originalFileName ?: "unknown"
+                        val file = File("C:\\Users\\Imprarce\\Desktop\\ktor-frencheducation\\src\\main\\resources\\images\\$fileName")
+                        partData.streamProvider().use { input ->
+                            file.outputStream().buffered().use { output ->
+                                input.copyTo(output)
+                            }
+                        }
                     }
                     is PartData.BinaryItem -> Unit
                     else -> {}
                 }
             }
-            val imageUrl = "${Constants.BASE_URL}/uploaded_images/$fileName"
+            val imageUrl = "${Constants.BASE_URL}/v1/uploaded_images/$fileName"
 
 
             val email = call.request.queryParameters["email"]
@@ -127,7 +132,25 @@ fun Route.UserRoutes(
             }
         } catch (ex: Exception) {
             File("${Constants.USER_IMAGES_PATH}/$fileName").delete()
-            call.respond(HttpStatusCode.InternalServerError,"Ошибка при загрузке изображения")
+            call.respond(HttpStatusCode.Conflict,ex.message ?: "Возникла какая-то ошибка")
+        }
+    }
+
+    get("v1/uploaded_images/{fileName}"){
+        val fileName = call.parameters["fileName"]
+        if (fileName == null) {
+            call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Не указано имя файла"))
+            return@get
+        }
+        try {
+            val file = File("C:\\Users\\Imprarce\\Desktop\\ktor-frencheducation\\src\\main\\resources\\images\\$fileName")
+            if (!file.exists()) {
+                call.respond(HttpStatusCode.NotFound, SimpleResponse(false, "Файл не найден"))
+                return@get
+            }
+            call.respondFile(file)
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.InternalServerError, SimpleResponse(false, "Ошибка при загрузке файла"))
         }
     }
 
@@ -167,15 +190,4 @@ fun Route.UserRoutes(
             call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Что-то пошло не так"))
         }
     }
-}
-
-fun PartData.FileItem.save(path: String): String {
-    val fileBytes = streamProvider().readBytes()
-    val fileExtension = originalFileName?.takeLastWhile { it != '.' }
-    val fileName = UUID.randomUUID().toString() + "." + fileExtension
-    val folder = File(path)
-    folder.mkdir()
-    println("Path = $path $fileName")
-    File("$path$fileName").writeBytes(fileBytes)
-    return fileName
 }

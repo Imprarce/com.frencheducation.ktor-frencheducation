@@ -100,7 +100,7 @@ fun Route.UserRoutes(
 //
                     is PartData.FileItem -> {
                         fileName = partData.originalFileName ?: "unknown"
-                        val file = File("C:\\Users\\Imprarce\\Desktop\\ktor-frencheducation\\src\\main\\resources\\images\\$fileName")
+                        val file = File("src/main/resources/images/$fileName")
                         partData.streamProvider().use { input ->
                             file.outputStream().buffered().use { output ->
                                 input.copyTo(output)
@@ -112,7 +112,7 @@ fun Route.UserRoutes(
                     else -> {}
                 }
             }
-            val imageUrl = "${Constants.BASE_URL}/v1/uploaded_images/$fileName"
+            val imageUrl = "${Constants.BASE_URL}/$fileName"
 
 
             val email = call.request.queryParameters["email"]
@@ -140,6 +140,16 @@ fun Route.UserRoutes(
             File("${Constants.USER_IMAGES_PATH}/$fileName").delete()
             call.respond(HttpStatusCode.Conflict, ex.message ?: "Возникла какая-то ошибка")
         }
+    }
+
+    get("/{name}") {
+        // get filename from request url
+        val filename = call.parameters["name"]!!
+        val file = File("src/main/resources/images/$filename")
+        if(file.exists()) {
+            call.respondFile(file)
+        }
+        else call.respond(HttpStatusCode.NotFound)
     }
 
     post("v1/users/updateName") {

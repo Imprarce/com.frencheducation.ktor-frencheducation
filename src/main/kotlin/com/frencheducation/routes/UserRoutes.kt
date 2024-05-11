@@ -224,4 +224,24 @@ fun Route.UserRoutes(
             call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Что-то пошло не так"))
         }
     }
+
+    get("v1/users/name") {
+        val email = call.request.queryParameters["email"]
+
+        if (email.isNullOrBlank()) {
+            call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Вы не ввели почту"))
+            return@get
+        }
+
+        try {
+            val user = db.findUserByEmail(email)
+            if(user!= null){
+                call.respond(HttpStatusCode.OK, user.userName)
+            } else {
+                call.respond(HttpStatusCode.Conflict,  SimpleResponse(false, "Пользователь не найден"))
+            }
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Что-то пошло не так"))
+        }
+    }
 }

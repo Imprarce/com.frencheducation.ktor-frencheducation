@@ -44,6 +44,7 @@ class UserRepository {
         }
     }
 
+
     private fun rowToUser(row: ResultRow?): User?{
         if(row == null){
             return null

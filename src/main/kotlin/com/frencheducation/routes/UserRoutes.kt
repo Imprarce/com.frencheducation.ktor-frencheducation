@@ -169,19 +169,23 @@ fun Route.UserRoutes(
         }
     }
 
-    get("v1/uploaded_images/{fileName}") {
-        val fileName = call.parameters["fileName"]
-        if (fileName == null) {
-            call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Не указано имя файла"))
+    get("v1/uploaded_images/get") {
+        val email = call.request.queryParameters["email"]
+        if (email == null) {
+            call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Не указана почта"))
             return@get
         }
+
         try {
-            val file = File("C:\\Users\\Imprarce\\Desktop\\ktor-frencheducation\\src\\main\\resources\\images\\$fileName")
-            if (!file.exists()) {
-                call.respond(HttpStatusCode.NotFound, SimpleResponse(false, "Файл не найден"))
+            val user = db.findUserByEmail(email)
+            if (user == null) {
+                call.respond(
+                    HttpStatusCode.BadRequest,
+                    SimpleResponse(false, "Пользователь с указанным email не найден")
+                )
                 return@get
             }
-            call.respondFile(file)
+            call.respond(HttpStatusCode.OK, user.imageUrl)
         } catch (e: Exception) {
             call.respond(HttpStatusCode.InternalServerError, SimpleResponse(false, "Ошибка при загрузке файла"))
         }

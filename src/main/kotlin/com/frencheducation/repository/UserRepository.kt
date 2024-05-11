@@ -36,6 +36,14 @@ class UserRepository {
         }
     }
 
+    suspend fun updateUserName(userId: Int, name: String) {
+        dbQuery {
+            UserTable.update({ UserTable.idUser eq userId }) {
+                it[userName] = name
+            }
+        }
+    }
+
     private fun rowToUser(row: ResultRow?): User?{
         if(row == null){
             return null

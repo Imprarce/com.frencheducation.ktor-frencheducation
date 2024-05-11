@@ -11,7 +11,6 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.server.routing.post
 import java.io.File
 import java.time.LocalDateTime
 import java.util.*
@@ -37,7 +36,7 @@ fun Route.UserRoutes(
         try {
             val checkUser = db.findUserByEmail(registerRequest.email)
 
-            if(checkUser != null){
+            if (checkUser != null) {
                 call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Данная почта занята почта"))
                 return@post
             }
@@ -98,6 +97,7 @@ fun Route.UserRoutes(
                         if (partData.name == "email") {
                         }
                     }
+
                     is PartData.FileItem -> {
                         fileName = partData.originalFileName ?: "unknown"
                         val file = File("src/main/resources/images/$fileName")
@@ -107,6 +107,7 @@ fun Route.UserRoutes(
                             }
                         }
                     }
+
                     is PartData.BinaryItem -> Unit
                     else -> {}
                 }
@@ -122,21 +123,54 @@ fun Route.UserRoutes(
             try {
                 val user = db.findUserByEmail(email)
                 if (user == null) {
-                    call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Пользователь с указанным email не найден"))
+                    call.respond(
+                        HttpStatusCode.BadRequest,
+                        SimpleResponse(false, "Пользователь с указанным email не найден")
+                    )
                     return@post
                 }
                 db.updateUserImage(user.idUser, imageUrl)
                 call.respond(HttpStatusCode.OK, SimpleResponse(true, "Аватар успешно обновлен"))
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Ошибка при обновлении аватара пользователя"))
+                call.respond(
+                    HttpStatusCode.Conflict,
+                    SimpleResponse(false, e.message ?: "Ошибка при обновлении аватара пользователя")
+                )
             }
         } catch (ex: Exception) {
             File("${Constants.USER_IMAGES_PATH}/$fileName").delete()
-            call.respond(HttpStatusCode.Conflict,ex.message ?: "Возникла какая-то ошибка")
+            call.respond(HttpStatusCode.Conflict, ex.message ?: "Возникла какая-то ошибка")
         }
     }
 
-    get("v1/uploaded_images/{fileName}"){
+    post("v1/users/updateName") {
+        try {
+            val email = call.request.queryParameters["email"]
+            val name = call.request.queryParameters["name"]
+            if (email.isNullOrBlank() || name.isNullOrBlank()) {
+                call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Не указан email пользователя"))
+                return@post
+            }
+
+            val user = db.findUserByEmail(email)
+            if (user == null) {
+                call.respond(
+                    HttpStatusCode.BadRequest,
+                    SimpleResponse(false, "Пользователь с указанным email не найден")
+                )
+                return@post
+            }
+            db.updateUserName(user.idUser, name)
+            call.respond(HttpStatusCode.OK, SimpleResponse(true, "Имя успешно обновлено"))
+        } catch (e: Exception) {
+            call.respond(
+                HttpStatusCode.Conflict,
+                SimpleResponse(false, e.message ?: "Ошибка при обновлении имени пользователя")
+            )
+        }
+    }
+
+    get("v1/uploaded_images/{fileName}") {
         val fileName = call.parameters["fileName"]
         if (fileName == null) {
             call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Не указано имя файла"))
@@ -170,7 +204,7 @@ fun Route.UserRoutes(
 
             val checkUser = db.findUserByEmail(email)
 
-            if(checkUser == null){
+            if (checkUser == null) {
                 call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Пользователя не существует"))
                 return@get
             }

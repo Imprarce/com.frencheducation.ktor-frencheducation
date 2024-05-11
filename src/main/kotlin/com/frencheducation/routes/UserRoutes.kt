@@ -133,12 +133,12 @@ fun Route.UserRoutes(
                 call.respond(HttpStatusCode.OK, SimpleResponse(true, "Аватар успешно обновлен"))
             } catch (e: Exception) {
                 call.respond(
-                    HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Ошибка при обновлении аватара пользователя")
+                    HttpStatusCode.Conflict, SimpleResponse(false, "Ошибка при обновлении аватара пользователя - ${e.message}")
                 )
             }
         } catch (ex: Exception) {
             File("${Constants.USER_IMAGES_PATH}/$fileName").delete()
-            call.respond(HttpStatusCode.Conflict, ex.message ?: "Возникла какая-то ошибка")
+            call.respond(HttpStatusCode.Conflict, "Возникла какая-то ошибка при загрузке файла - ${ex.message}")
         }
     }
 

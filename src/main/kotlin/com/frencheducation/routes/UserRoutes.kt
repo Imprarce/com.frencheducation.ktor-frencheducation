@@ -100,7 +100,7 @@ fun Route.UserRoutes(
 //
                     is PartData.FileItem -> {
                         fileName = partData.originalFileName ?: "unknown"
-                        val file = File("/images/$fileName")
+                        val file = File("src/main/resources/images/$fileName")
                         partData.streamProvider().use { input ->
                             file.outputStream().buffered().use { output ->
                                 input.copyTo(output)
@@ -112,7 +112,7 @@ fun Route.UserRoutes(
                     else -> {}
                 }
             }
-            val imageUrl = "${Constants.BASE_URL}/$fileName"
+            val imageUrl = "${Constants.BASE_URL}/v1/uploaded_images/$fileName"
 
 
             val email = call.request.queryParameters["email"]
@@ -139,6 +139,23 @@ fun Route.UserRoutes(
         } catch (ex: Exception) {
             File("${Constants.USER_IMAGES_PATH}/$fileName").delete()
             call.respond(HttpStatusCode.Conflict, "Возникла какая-то ошибка при загрузке файла - ${ex.message}")
+        }
+    }
+    get("v1/uploaded_images/{fileName}") {
+        val fileName = call.parameters["fileName"]
+        if (fileName == null) {
+            call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Не указано имя файла"))
+            return@get
+        }
+        try {
+            val file = File("/images/$fileName")
+            if (!file.exists()) {
+                call.respond(HttpStatusCode.NotFound, SimpleResponse(false, "Файл не найден"))
+                return@get
+            }
+            call.respondFile(file)
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.InternalServerError, SimpleResponse(false, "Ошибка при загрузке файла"))
         }
     }
 

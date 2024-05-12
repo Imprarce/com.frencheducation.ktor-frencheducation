@@ -1,17 +1,13 @@
 package com.frencheducation.repository
 
-import com.frencheducation.data.model.favorite_words.FavoriteWords
-import com.frencheducation.data.model.module.ModuleItem
 import com.frencheducation.data.model.module_progress.ModuleProgress
-import com.frencheducation.data.tabel.FavoriteWordsTable
 import com.frencheducation.data.tabel.ModuleProgressTable
-import com.frencheducation.data.tabel.ModuleTable
+import com.frencheducation.repository.DatabaseFactory.dbQuery
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class ModuleProgressRepository {
     suspend fun addModuleProgress(moduleProgressItem: ModuleProgress) {
-        DatabaseFactory.dbQuery {
+        dbQuery {
             ModuleProgressTable.insert { moduleProgressTable ->
                 moduleProgressTable[idModule] = moduleProgressItem.idModule
                 moduleProgressTable[idUser] = moduleProgressItem.idUser
@@ -20,16 +16,16 @@ class ModuleProgressRepository {
         }
     }
 
-    suspend fun getAllModulesProgress(id_user: Int): List<ModuleProgress> {
-        return DatabaseFactory.dbQuery {
-            ModuleProgressTable.select{
-                ModuleProgressTable.idUser.eq(id_user)
-            }.mapNotNull { rowToModuleProgress(it) }
+    suspend fun getModuleProgress(id_user: Int, id_module: Int) = dbQuery {
+        ModuleProgressTable.select {
+            ModuleProgressTable.idUser.eq(id_user) and ModuleProgressTable.idModule.eq(id_module)
         }
+            .mapNotNull { rowToModuleProgress(it) }
+            .singleOrNull()
     }
 
     suspend fun updateModuleProgress(moduleProgressItem: ModuleProgress, id_module: Int, id_user: Int) {
-        DatabaseFactory.dbQuery {
+        dbQuery {
             ModuleProgressTable.update(
                 where = {
                     ModuleProgressTable.idModule.eq(id_module) and ModuleProgressTable.idUser.eq(id_user)

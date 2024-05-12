@@ -2,10 +2,7 @@ package com.frencheducation.routes
 
 import com.frencheducation.data.model.SimpleResponse
 import com.frencheducation.data.model.module_progress.ModuleProgress
-import com.frencheducation.data.model.module_tasks.ModuleTasks
-import com.frencheducation.data.model.user.User
 import com.frencheducation.repository.ModuleProgressRepository
-import com.frencheducation.repository.ModuleTasksRepository
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -32,10 +29,10 @@ fun Route.ModuleProgressRoutes(
         }
     }
 
-    post("v1/module_progress/update"){
+    post("v1/module_progress/update") {
         val moduleProgress = try {
             call.receive<ModuleProgress>()
-        } catch (e: Exception){
+        } catch (e: Exception) {
             call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Пропущены необходимые параметры"))
             return@post
         }
@@ -43,24 +40,42 @@ fun Route.ModuleProgressRoutes(
         try {
             db.updateModuleProgress(moduleProgress, moduleProgress.idModule, moduleProgress.idUser)
             call.respond(HttpStatusCode.OK, SimpleResponse(true, "Прогресс модуля успешно обновлен"))
-        } catch (e: Exception){
+        } catch (e: Exception) {
             call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Возникла какая-то проблема"))
         }
     }
 
     get("v1/module_progress/get") {
         try {
-            val idUser = call.request.queryParameters["id"]
+            val idUser = call.request.queryParameters["id_user"]
+            val idModule = call.request.queryParameters["id_module"]
 
             if (idUser.isNullOrBlank()) {
-                call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Вы не ввели почту"))
+                call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Пользователь не найден"))
                 return@get
             }
 
-            val moduleTasks = db.getAllModulesProgress(idUser.toInt())
-            call.respond(HttpStatusCode.OK, moduleTasks)
+            if (idModule.isNullOrBlank()) {
+                call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Модуль не найден"))
+                return@get
+            }
+
+
+            val checkModuleProgress = db.getModuleProgress(idUser.toInt(), idModule.toInt())
+
+            if (checkModuleProgress == null) {
+                call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Прогресс не найден"))
+                return@get
+            }
+
+            val moduleProgress = ModuleProgress(
+                idModule = checkModuleProgress.idModule,
+                idUser = checkModuleProgress.idUser,
+                progress = checkModuleProgress.progress
+            )
+            call.respond(HttpStatusCode.OK, moduleProgress)
         } catch (e: Exception) {
-            call.respond(HttpStatusCode.Conflict, emptyList<ModuleTasks>())
+            call.respond(HttpStatusCode.Conflict, "Прогресс не найден")
         }
     }
 

@@ -62,7 +62,7 @@ fun Route.TaskRoutes(
 
     get("v1/tasks/get") {
         val taskList = try {
-            call.receive<List<Int>>()
+            call.request.queryParameters.getAll("listTasks")?.map { it.toInt() } ?: emptyList()
         } catch (e: Exception){
             call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Пропущены необходимые параметры"))
             return@get

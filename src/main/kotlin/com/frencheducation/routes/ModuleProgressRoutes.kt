@@ -50,8 +50,14 @@ fun Route.ModuleProgressRoutes(
 
     get("v1/module_progress/get") {
         try {
-            val idUser = call.principal<User>()!!.idUser
-            val moduleTasks = db.getAllModulesProgress(idUser)
+            val idUser = call.request.queryParameters["id"]
+
+            if (idUser.isNullOrBlank()) {
+                call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Вы не ввели почту"))
+                return@get
+            }
+
+            val moduleTasks = db.getAllModulesProgress(idUser.toInt())
             call.respond(HttpStatusCode.OK, moduleTasks)
         } catch (e: Exception) {
             call.respond(HttpStatusCode.Conflict, emptyList<ModuleTasks>())

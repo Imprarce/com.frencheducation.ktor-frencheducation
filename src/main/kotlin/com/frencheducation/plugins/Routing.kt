@@ -23,7 +23,7 @@ fun Application.configureRouting() {
         }
 
         static("/uploaded_images"){
-            staticRootFolder = File("C:\\Users\\Imprarce\\Desktop\\ktor-frencheducation\\src\\main\\resources\\images")
+            staticRootFolder = File("src\\main\\resources\\images\\")
         }
 
         CommentsRoutes(CommentRepository())

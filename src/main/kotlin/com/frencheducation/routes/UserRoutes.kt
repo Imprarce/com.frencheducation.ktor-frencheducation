@@ -100,7 +100,7 @@ fun Route.UserRoutes(
 //
                     is PartData.FileItem -> {
                         fileName = partData.originalFileName ?: "unknown"
-                        val file = File("C:\\Users\\Imprarce\\Desktop\\ktor-frencheducation\\src\\main\\resources\\images\\$fileName")
+                        val file = File("src\\main\\resources\\images\\$fileName")
                         partData.streamProvider().use { input ->
                             file.outputStream().buffered().use { output ->
                                 input.copyTo(output)
@@ -112,7 +112,7 @@ fun Route.UserRoutes(
                     else -> {}
                 }
             }
-            val imageUrl = "${Constants.BASE_URL}/v1/uploaded_images/$fileName"
+            val imageUrl = "${Constants.BASE_URL}/$fileName"
 
 
             val email = call.request.queryParameters["email"]
@@ -130,7 +130,7 @@ fun Route.UserRoutes(
                     return@post
                 }
                 db.updateUserImage(user.idUser, imageUrl)
-                call.respond(HttpStatusCode.OK, SimpleResponse(true, "Аватар успешно обновлен"))
+                call.respond(HttpStatusCode.OK, SimpleResponse(true, "Аватар успешно обновлен - $imageUrl"))
             } catch (e: Exception) {
                 call.respond(
                     HttpStatusCode.Conflict, SimpleResponse(false, "Ошибка при обновлении аватара пользователя - ${e.message}")
@@ -145,7 +145,7 @@ fun Route.UserRoutes(
 
     get("/{name}") {
         val filename = call.parameters["name"]!!
-        val file = File("/images/$filename")
+        val file = File("src\\main\\resources\\images\\$filename")
         if(file.exists()) {
             call.respondFile(file)
         }

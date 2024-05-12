@@ -26,6 +26,14 @@ class TaskCompletedRepository {
             .singleOrNull()
     }
 
+    suspend fun getTasksCompletedByUser(id_user: Int) = dbQuery {
+            TaskCompletedTable.select {
+                TaskCompletedTable.idUser.eq(id_user)
+            }
+                .mapNotNull { rowToTaskCompleted(it) }
+        }
+
+
     private fun rowToTaskCompleted(row: ResultRow?): TaskCompleted? {
         if (row == null) {
             return null

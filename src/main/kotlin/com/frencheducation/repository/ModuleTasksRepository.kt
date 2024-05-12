@@ -17,7 +17,7 @@ class ModuleTasksRepository {
         }
     }
 
-    suspend fun getAllModulesTasks(): List<ModuleTasks> {
+    suspend fun getAllModulesTasks(id_module: Int): List<ModuleTasks> {
         return DatabaseFactory.dbQuery {
             ModuleTasksTable.selectAll()
                 .mapNotNull { rowToModuleTasks(it) }
@@ -43,10 +43,9 @@ class ModuleTasksRepository {
         }
     }
 
-    suspend fun getModuleTasksById(id_module: Int, id_task: Int) = DatabaseFactory.dbQuery {
-        ModuleTasksTable.select { ModuleTasksTable.idModule.eq(id_module) and ModuleTasksTable.idTask.eq(id_task)}
+    suspend fun getModuleTasksById(id_module: Int) = DatabaseFactory.dbQuery {
+        ModuleTasksTable.select { ModuleTasksTable.idModule.eq(id_module)}
             .map { rowToModuleTasks(it) }
-            .singleOrNull()
     }
 
     private fun rowToModuleTasks(row: ResultRow?): ModuleTasks? {

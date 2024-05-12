@@ -67,7 +67,15 @@ fun Route.ModuleTasksRoutes(
 
     get("v1/module_tasks/get") {
         try {
-            val moduleTasks = db.getAllModulesTasks()
+            val idModule = call.request.queryParameters["id_module"]
+
+            if (idModule.isNullOrBlank()) {
+                call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Модуль не найден"))
+                return@get
+            }
+
+            val moduleTasks = db.getModuleTasksById(idModule.toInt())
+
             call.respond(HttpStatusCode.OK, moduleTasks)
         } catch (e: Exception) {
             call.respond(HttpStatusCode.Conflict, emptyList<ModuleTasks>())

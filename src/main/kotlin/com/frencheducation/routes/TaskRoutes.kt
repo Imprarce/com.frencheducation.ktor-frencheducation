@@ -69,9 +69,28 @@ fun Route.TaskRoutes(
         }
 
         try {
-
             val tasks = db.getAllTasks(taskList)
             call.respond(HttpStatusCode.OK, tasks)
+        } catch (e: Exception){
+            call.respond(HttpStatusCode.Conflict, emptyList<Task>())
+        }
+    }
+
+    get("v1/task/get") {
+        val taskId = try {
+            call.request.queryParameters["id_task"]!!
+        } catch (e: Exception){
+            call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "id написан неверно"))
+            return@get
+        }
+
+        try {
+            val task = db.getTaskById(taskId.toInt())
+            if(task != null){
+                call.respond(HttpStatusCode.OK, task)
+            } else {
+                call.respond(HttpStatusCode.BadRequest, "Задание не найдено")
+            }
         } catch (e: Exception){
             call.respond(HttpStatusCode.Conflict, emptyList<Task>())
         }

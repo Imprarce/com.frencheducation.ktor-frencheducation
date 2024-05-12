@@ -21,10 +21,11 @@ class TaskRepository {
         }
     }
 
-    suspend fun getAllTasks(): List<Task> {
+    suspend fun getAllTasks(listTask: List<Int>): List<Task> {
         return DatabaseFactory.dbQuery {
-            TaskTable.selectAll()
-                .mapNotNull { rowToTask(it) }
+            TaskTable.select {
+                TaskTable.idTask.inList(listTask)
+            }.mapNotNull { rowToTask(it) }
         }
     }
 

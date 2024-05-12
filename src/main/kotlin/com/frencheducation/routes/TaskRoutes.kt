@@ -61,8 +61,16 @@ fun Route.TaskRoutes(
     }
 
     get("v1/tasks/get") {
+        val taskList = try {
+            call.receive<List<Int>>()
+        } catch (e: Exception){
+            call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Пропущены необходимые параметры"))
+            return@get
+        }
+
         try {
-            val tasks = db.getAllTasks()
+
+            val tasks = db.getAllTasks(taskList)
             call.respond(HttpStatusCode.OK, tasks)
         } catch (e: Exception){
             call.respond(HttpStatusCode.Conflict, emptyList<Task>())

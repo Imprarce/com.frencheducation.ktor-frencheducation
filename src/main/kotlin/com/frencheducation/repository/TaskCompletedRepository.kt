@@ -1,15 +1,16 @@
 package com.frencheducation.repository
 
-import com.frencheducation.data.model.favorite_words.FavoriteWords
 import com.frencheducation.data.model.task_completed.TaskCompleted
-import com.frencheducation.data.tabel.FavoriteWordsTable
 import com.frencheducation.data.tabel.TaskCompletedTable
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import com.frencheducation.repository.DatabaseFactory.dbQuery
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 
 class TaskCompletedRepository {
     suspend fun addTaskCompleted(taskCompleted: TaskCompleted) {
-        DatabaseFactory.dbQuery {
+        dbQuery {
             TaskCompletedTable.insert { taskCompletedTable ->
                 taskCompletedTable[idTask] = taskCompleted.idTask
                 taskCompletedTable[idUser] = taskCompleted.idUser
@@ -17,12 +18,12 @@ class TaskCompletedRepository {
         }
     }
 
-    suspend fun getAllTasksCompleted(id_user: Int): List<TaskCompleted> {
-        return DatabaseFactory.dbQuery {
-            TaskCompletedTable.select {
-                TaskCompletedTable.idUser.eq(id_user)
-            }.mapNotNull { rowToTaskCompleted(it) }
+    suspend fun getTaskCompleted(id_user: Int, id_task: Int) = dbQuery {
+        TaskCompletedTable.select {
+            TaskCompletedTable.idUser.eq(id_user) and TaskCompletedTable.idTask.eq(id_task)
         }
+            .mapNotNull { rowToTaskCompleted(it) }
+            .singleOrNull()
     }
 
     private fun rowToTaskCompleted(row: ResultRow?): TaskCompleted? {

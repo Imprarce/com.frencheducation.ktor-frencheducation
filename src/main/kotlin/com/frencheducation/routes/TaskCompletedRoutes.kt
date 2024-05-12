@@ -33,11 +33,29 @@ fun Route.TaskCompletedRoutes(
 
     get("v1/task_completed/get") {
         try {
-            val idUser = call.principal<User>()!!.idUser
-            val tasksCompleted = db.getAllTasksCompleted(idUser)
-            call.respond(HttpStatusCode.OK, tasksCompleted)
+            val idUser = call.request.queryParameters["id_user"]
+            val idTask = call.request.queryParameters["id_task"]
+
+            if (idUser.isNullOrBlank()) {
+                call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Пользователь не найден"))
+                return@get
+            }
+
+            if (idTask.isNullOrBlank()) {
+                call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Задание не найдено"))
+                return@get
+            }
+
+            val taskCompleted = db.getTaskCompleted(idUser.toInt(), idTask.toInt())
+
+            if (taskCompleted == null) {
+                call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Задание не найдено"))
+                return@get
+            }
+
+            call.respond(HttpStatusCode.OK, taskCompleted)
         } catch (e: Exception) {
-            call.respond(HttpStatusCode.Conflict, emptyList<TaskCompleted>())
+            call.respond(HttpStatusCode.Conflict, "")
         }
     }
 

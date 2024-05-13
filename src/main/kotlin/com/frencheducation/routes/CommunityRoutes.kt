@@ -2,21 +2,27 @@ package com.frencheducation.routes
 
 import com.frencheducation.data.model.SimpleResponse
 import com.frencheducation.data.model.community.Community
+import com.frencheducation.data.model.user.LocalDateTimeTypeAdapter
 import com.frencheducation.repository.CommunityRepository
+import com.google.gson.GsonBuilder
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import java.time.LocalDateTime
 
 fun Route.CommutinyRoutes(
     db: CommunityRepository
 ) {
+    val gson = GsonBuilder()
+        .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeTypeAdapter())
+        .create()
     post("v1/community/create") {
         val community = try {
             call.receive<Community>()
         } catch (e: Exception) {
-            call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Пропущены необходимые параметры"))
+            call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, e.message ?: "Пропущены некоторые параметры"))
             return@post
         }
 

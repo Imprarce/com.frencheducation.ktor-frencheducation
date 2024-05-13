@@ -71,7 +71,7 @@ fun Route.CommentsRoutes(
             val comments = db.getAllComments(communityId.toInt())
             call.respond(HttpStatusCode.OK, comments)
         } catch (e: Exception) {
-            call.respond(HttpStatusCode.Conflict, emptyList<Comment>())
+            call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Возникла какая-то проблема"))
         }
     }
 

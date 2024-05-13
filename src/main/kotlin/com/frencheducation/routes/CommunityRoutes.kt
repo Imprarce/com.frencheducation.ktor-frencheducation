@@ -2,6 +2,7 @@ package com.frencheducation.routes
 
 import com.frencheducation.data.model.SimpleResponse
 import com.frencheducation.data.model.community.Community
+import com.frencheducation.data.model.community.CommunityRequest
 import com.frencheducation.data.model.user.LocalDateTimeTypeAdapter
 import com.frencheducation.repository.CommunityRepository
 import com.google.gson.GsonBuilder
@@ -15,18 +16,30 @@ import java.time.LocalDateTime
 fun Route.CommutinyRoutes(
     db: CommunityRepository
 ) {
-    val gson = GsonBuilder()
-        .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeTypeAdapter())
-        .create()
+
     post("v1/community/create") {
-        val community = try {
-            call.receive<Community>()
+        val communityRequest = try {
+            call.receive<CommunityRequest>()
         } catch (e: Exception) {
             call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, e.message ?: "Пропущены некоторые параметры"))
             return@post
         }
 
         try {
+            val community = Community(
+                idCommunity = communityRequest.idCommunity,
+                idUser = communityRequest.idUser,
+                userImage = communityRequest.userImage,
+                userName = communityRequest.userName,
+                title = communityRequest.title,
+                rating = communityRequest.rating,
+                view = communityRequest.view,
+                hasProblemResolve = communityRequest.hasProblemResolve,
+                description = communityRequest.description,
+                createTime = LocalDateTime.now(),
+                lastChange = LocalDateTime.now()
+            )
+
             db.addCommunity(community)
             call.respond(HttpStatusCode.OK, SimpleResponse(true, "Обсуждение успешно добавлено"))
         } catch (e: Exception) {

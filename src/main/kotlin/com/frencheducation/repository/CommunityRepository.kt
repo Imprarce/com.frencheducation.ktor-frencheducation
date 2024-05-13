@@ -10,6 +10,8 @@ class CommunityRepository {
     suspend fun addCommunity(community: Community) {
         DatabaseFactory.dbQuery {
             CommunityTable.insert { communityTable ->
+                communityTable[userImage] = community.userImage
+                communityTable[userName] = community.userName
                 communityTable[title] = community.title
                 communityTable[rating] = community.rating
                 communityTable[view] = community.view
@@ -35,6 +37,8 @@ class CommunityRepository {
                     CommunityTable.idCommunity.eq(id)
                 }
             ) { communityTable ->
+                communityTable[userImage] = community.userImage
+                communityTable[userName] = community.userName
                 communityTable[title] = community.title
                 communityTable[rating] = community.rating
                 communityTable[view] = community.view
@@ -66,6 +70,8 @@ class CommunityRepository {
         return Community(
             idCommunity = row[CommunityTable.idCommunity],
             idUser = row[CommunityTable.idUser],
+            userImage = row[CommunityTable.userImage],
+            userName = row[CommunityTable.userName],
             title = row[CommunityTable.title],
             rating = row[CommunityTable.rating],
             view = row[CommunityTable.view],

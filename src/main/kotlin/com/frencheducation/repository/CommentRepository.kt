@@ -10,6 +10,8 @@ class CommentRepository {
     suspend fun addComment(comment: Comment) {
         DatabaseFactory.dbQuery {
             CommentTable.insert { commentTable ->
+                commentTable[idUser] = comment.idUser
+                commentTable[idCommunity] = comment.idCommunity
                 commentTable[rating] = comment.rating
                 commentTable[message] = comment.message
             }

@@ -6,6 +6,8 @@ import org.jetbrains.exposed.sql.javatime.datetime
 object CommunityTable : Table("community") {
     var idCommunity = integer("id_community").autoIncrement()
     var idUser = integer("id_user").references(UserTable.idUser)
+    var userImage = varchar("user_image", 400)
+    var userName = varchar("user_name", 400)
     var title = varchar("title", 60)
     var rating = integer("rating")
     var view = integer("view")

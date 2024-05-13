@@ -46,7 +46,7 @@ fun Route.CommutinyRoutes(
 
     delete("v1/community/delete") {
         val communityId = try {
-            call.request.queryParameters["id"]!!
+            call.request.queryParameters["id_community"]!!
         } catch (e: Exception) {
             call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "id написан неверно"))
             return@delete

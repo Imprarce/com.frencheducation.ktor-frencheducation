@@ -29,15 +29,15 @@ fun Route.CommentsRoutes(
     }
 
     post("v1/comment/update") {
-        val comment = try {
-            call.receive<Comment>()
+        val commentId = try {
+            call.request.queryParameters["id_comment"]!!
         } catch (e: Exception) {
-            call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Пропущены необходимые параметры"))
+            call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "id написан неверно"))
             return@post
         }
 
         try {
-            db.updateComment(comment, comment.idComment)
+//            db.updateComment(comment, comment.idComment)
             call.respond(HttpStatusCode.OK, SimpleResponse(true, "Комментарий успешно обновлен"))
         } catch (e: Exception) {
             call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Возникла какая-то проблема"))
@@ -46,7 +46,7 @@ fun Route.CommentsRoutes(
 
     delete("v1/comment/delete") {
         val commentId = try {
-            call.request.queryParameters["id"]!!
+            call.request.queryParameters["id_comment"]!!
         } catch (e: Exception) {
             call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "id написан неверно"))
             return@delete
@@ -63,7 +63,7 @@ fun Route.CommentsRoutes(
     get("v1/comment/get") {
         try {
             val communityId = try {
-                call.request.queryParameters["id"]!!
+                call.request.queryParameters["id_community"]!!
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "id написан неверно"))
                 return@get

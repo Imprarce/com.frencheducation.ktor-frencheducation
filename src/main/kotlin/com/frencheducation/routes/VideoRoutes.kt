@@ -87,7 +87,7 @@ fun Route.VideoRoutes(
         }
     }
 
-    get("/{name}") {
+    get("/videos/{name}") {
         val filename = call.parameters["name"]!!
         val file = File("src\\main\\resources\\videos\\$filename")
         if(file.exists()) {

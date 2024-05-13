@@ -82,7 +82,11 @@ fun Route.CommutinyRoutes(
     get("v1/community/get") {
         try {
             val communities = db.getAllCommunities()
-            call.respond(HttpStatusCode.OK, communities)
+            val gson = GsonBuilder()
+                .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeTypeAdapter())
+                .create()
+            val jsonString = gson.toJson(communities)
+            call.respond(HttpStatusCode.OK, jsonString)
         } catch (e: Exception) {
             call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Возникла какая-то проблема"))
         }

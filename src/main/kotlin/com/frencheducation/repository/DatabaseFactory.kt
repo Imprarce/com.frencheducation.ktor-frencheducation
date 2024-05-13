@@ -15,7 +15,6 @@ object DatabaseFactory {
         Database.connect(hikari())
 
         transaction {
-            SchemaUtils.drop(CommentTable)
             SchemaUtils.create(UserTable)
             SchemaUtils.create(CommentTable)
             SchemaUtils.create(CommunityTable)
@@ -27,7 +26,6 @@ object DatabaseFactory {
             SchemaUtils.create(TaskCompletedTable)
             SchemaUtils.create(TaskTable)
             SchemaUtils.create(VideoTable)
-            SchemaUtils.createMissingTablesAndColumns(CommunityTable)
         }
 
     }

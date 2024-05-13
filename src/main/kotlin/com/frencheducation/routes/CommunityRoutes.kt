@@ -84,7 +84,7 @@ fun Route.CommutinyRoutes(
             val communities = db.getAllCommunities()
             call.respond(HttpStatusCode.OK, communities)
         } catch (e: Exception) {
-            call.respond(HttpStatusCode.Conflict, emptyList<Community>())
+            call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Возникла какая-то проблема"))
         }
     }
 

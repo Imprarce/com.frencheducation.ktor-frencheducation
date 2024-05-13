@@ -27,6 +27,7 @@ object DatabaseFactory {
             SchemaUtils.create(TaskTable)
             SchemaUtils.create(VideoTable)
             SchemaUtils.createMissingTablesAndColumns(CommunityTable)
+            SchemaUtils.createMissingTablesAndColumns(CommentTable)
         }
 
     }

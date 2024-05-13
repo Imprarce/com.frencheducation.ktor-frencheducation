@@ -13,6 +13,8 @@ class CommentRepository {
             CommentTable.insert { commentTable ->
                 commentTable[idUser] = comment.idUser
                 commentTable[idCommunity] = comment.idCommunity
+                commentTable[userImage] = comment.userImage
+                commentTable[userName] = comment.userName
                 commentTable[rating] = comment.rating
                 commentTable[message] = comment.message
             }

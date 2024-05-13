@@ -92,7 +92,7 @@ fun Route.VideoRoutes(
         val filename = call.parameters["name"]!!
         val file = File("src\\main\\resources\\videos\\$filename")
 
-        val videoUrl = "src\\main\\resources\\videos\\$filename"
+        val videoUrl = Constants.BASE_URL + filename
         val videoPage = """
             <!DOCTYPE html>
             <html lang="en">

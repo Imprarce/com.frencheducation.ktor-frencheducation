@@ -26,8 +26,9 @@ object DatabaseFactory {
             SchemaUtils.create(TaskCompletedTable)
             SchemaUtils.create(TaskTable)
             SchemaUtils.create(VideoTable)
-
+            SchemaUtils.createMissingTablesAndColumns(CommunityTable)
         }
+
     }
     private fun hikari(): HikariDataSource{
         val config = HikariConfig()

@@ -11,6 +11,7 @@ class VideoRepository {
     suspend fun addVideo(video: Video) {
         DatabaseFactory.dbQuery {
             VideoTable.insert { videoTable ->
+                videoTable[idUser] = video.userId
                 videoTable[rating] = video.rating
                 videoTable[view] = video.view
                 videoTable[description] = video.description

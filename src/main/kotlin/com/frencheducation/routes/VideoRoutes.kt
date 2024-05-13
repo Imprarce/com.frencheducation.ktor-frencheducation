@@ -66,6 +66,7 @@ fun Route.VideoRoutes(
                 call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Возникла какая-то проблема"))
             }
         } else {
+            File("${Constants.USER_IMAGES_PATH}/$fileName").delete()
             call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Пропущены необходимые параметры"))
         }
     }

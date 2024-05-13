@@ -92,7 +92,17 @@ fun Route.VideoRoutes(
         val filename = call.parameters["name"]!!
         val file = File("src\\main\\resources\\videos\\$filename")
 
-        val videoUrl = "${Constants.USER_IMAGES_PATH}/$filename"
+        if(file.exists()) {
+            call.respondFile(file)
+        }
+        else call.respond(HttpStatusCode.NotFound)
+    }
+
+    get("/player/{name}") {
+        val filename = call.parameters["name"]!!
+        val file = File("src\\main\\resources\\videos\\$filename")
+
+        val videoUrl = "${Constants.USER_IMAGES_PATH}/videos/$filename"
         val videoPage = """
             <!DOCTYPE html>
             <html lang="en">

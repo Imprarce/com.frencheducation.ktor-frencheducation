@@ -17,6 +17,7 @@ import java.time.LocalDateTime
 fun Route.VideoRoutes(
     db: VideoRepository
 ) {
+
     post("v1/video/create") {
 
         val multipart = call.receiveMultipart()
@@ -90,8 +91,28 @@ fun Route.VideoRoutes(
     get("/videos/{name}") {
         val filename = call.parameters["name"]!!
         val file = File("src\\main\\resources\\videos\\$filename")
+
+        val videoUrl = "src\\main\\resources\\videos\\$filename"
+        val videoPage = """
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Video Player</title>
+            </head>
+            <body>
+                <h1>Video Player</h1>
+                <video controls>
+                    <source src="$videoUrl" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </body>
+            </html>
+        """.trimIndent()
+
         if(file.exists()) {
-            call.respondFile(file)
+            call.respondText(videoPage, ContentType.Text.Html)
         }
         else call.respond(HttpStatusCode.NotFound)
     }

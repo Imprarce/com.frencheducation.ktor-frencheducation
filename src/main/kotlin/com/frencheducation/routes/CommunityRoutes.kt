@@ -79,13 +79,33 @@ fun Route.CommutinyRoutes(
         }
     }
 
-    get("v1/community/get") {
+    get("v1/communities/get") {
         try {
             val communities = db.getAllCommunities()
             val gson = GsonBuilder()
                 .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeTypeAdapter())
                 .create()
             val jsonString = gson.toJson(communities)
+            call.respond(HttpStatusCode.OK, jsonString)
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Возникла какая-то проблема"))
+        }
+    }
+
+    get("v1/community/get") {
+        val communityId = try {
+            call.request.queryParameters["id_community"]!!
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "id написан неверно"))
+            return@get
+        }
+
+        try {
+            val community = db.getCommunityById(communityId.toInt())
+            val gson = GsonBuilder()
+                .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeTypeAdapter())
+                .create()
+            val jsonString = gson.toJson(community)
             call.respond(HttpStatusCode.OK, jsonString)
         } catch (e: Exception) {
             call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Возникла какая-то проблема"))

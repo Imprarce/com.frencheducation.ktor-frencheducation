@@ -11,6 +11,7 @@ class CommunityRepository {
     suspend fun addCommunity(community: Community) {
         DatabaseFactory.dbQuery {
             CommunityTable.insert { communityTable ->
+                communityTable[idUser] = community.idUser
                 communityTable[userImage] = community.userImage
                 communityTable[userName] = community.userName
                 communityTable[title] = community.title

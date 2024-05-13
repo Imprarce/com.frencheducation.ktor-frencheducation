@@ -9,6 +9,8 @@ object CommentTable : Table("comment") {
     var idComment = integer("id_comment").autoIncrement()
     var idUser = integer("id_user").references(UserTable.idUser)
     var idCommunity = integer("id_community").references(CommunityTable.idCommunity)
+    var userImage = varchar("user_image", 400)
+    var userName = varchar("user_name", 400)
     var rating = integer("rating")
     var message = varchar("message", 600)
 

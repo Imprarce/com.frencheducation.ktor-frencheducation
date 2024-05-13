@@ -2,6 +2,7 @@ package com.frencheducation.repository
 
 import com.frencheducation.data.model.community.Community
 import com.frencheducation.data.tabel.CommunityTable
+import com.frencheducation.data.tabel.UserTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -25,7 +26,8 @@ class CommunityRepository {
 
     suspend fun getAllCommunities(): List<Community> {
         return DatabaseFactory.dbQuery {
-            CommunityTable.selectAll()
+            (CommunityTable innerJoin UserTable)
+                .selectAll()
                 .mapNotNull { rowToCommunity(it) }
         }
     }
@@ -57,7 +59,7 @@ class CommunityRepository {
     }
 
     suspend fun getCommunityById(id: Int) = DatabaseFactory.dbQuery {
-        CommunityTable.select { CommunityTable.idCommunity.eq(id) }
+        (CommunityTable innerJoin UserTable).select { CommunityTable.idCommunity.eq(id) }
             .map { rowToCommunity(it) }
             .singleOrNull()
     }
@@ -70,8 +72,8 @@ class CommunityRepository {
         return Community(
             idCommunity = row[CommunityTable.idCommunity],
             idUser = row[CommunityTable.idUser],
-            userImage = row[CommunityTable.userImage],
-            userName = row[CommunityTable.userName],
+            userImage = row[UserTable.imageUrl],
+            userName = row[UserTable.userName],
             title = row[CommunityTable.title],
             rating = row[CommunityTable.rating],
             view = row[CommunityTable.view],

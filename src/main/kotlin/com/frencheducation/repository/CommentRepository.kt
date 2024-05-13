@@ -2,6 +2,7 @@ package com.frencheducation.repository
 
 import com.frencheducation.data.model.comment.Comment
 import com.frencheducation.data.tabel.CommentTable
+import com.frencheducation.data.tabel.UserTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -20,7 +21,7 @@ class CommentRepository {
 
     suspend fun getAllComments(id_community: Int): List<Comment> {
         return DatabaseFactory.dbQuery {
-            CommentTable.select{
+            (CommentTable innerJoin UserTable).select{
                 CommentTable.idCommunity.eq(id_community)
             }.mapNotNull { rowToComment(it) }
         }
@@ -46,7 +47,7 @@ class CommentRepository {
     }
 
     suspend fun getCommentById(id: Int) = DatabaseFactory.dbQuery {
-        CommentTable.select { CommentTable.idComment.eq(id) }
+        (CommentTable innerJoin UserTable).select { CommentTable.idComment.eq(id) }
             .map { rowToComment(it) }
             .singleOrNull()
     }
@@ -60,6 +61,8 @@ class CommentRepository {
             idComment = row[CommentTable.idComment],
             idCommunity = row[CommentTable.idCommunity],
             idUser = row[CommentTable.idUser],
+            userName = row[UserTable.userName],
+            userImage = row[UserTable.imageUrl],
             rating = row[CommentTable.rating],
             message = row[CommentTable.message]
         )

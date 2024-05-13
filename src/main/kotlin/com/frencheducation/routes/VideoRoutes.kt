@@ -55,7 +55,7 @@ fun Route.VideoRoutes(
             part.dispose()
         }
 
-        val videoUrl = "${Constants.BASE_URL}/$fileName"
+        val videoUrl = "${Constants.BASE_URL}/videos/$fileName"
 
         videoFields = videoFields?.copy(videoFile = videoUrl) ?: Video(videoId = 0, userId = 0, rating = 0, view = 0, description = "", title = "", videoFile = videoUrl)
 
@@ -67,7 +67,7 @@ fun Route.VideoRoutes(
                 call.respond(HttpStatusCode.Conflict, SimpleResponse(false, e.message ?: "Возникла какая-то проблема"))
             }
         } else {
-            File("${Constants.USER_IMAGES_PATH}/$fileName").delete()
+            File("${Constants.USER_IMAGES_PATH}/videos/$fileName").delete()
             call.respond(HttpStatusCode.BadRequest, SimpleResponse(false, "Пропущены необходимые параметры"))
         }
     }
@@ -114,7 +114,7 @@ fun Route.VideoRoutes(
             <body>
                 <h1>Video Player</h1>
                 <video controls>
-                    <source src="$videoUrl" type="video/mp4">
+                    <source src="$videoUrl" autoplay type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             </body>
